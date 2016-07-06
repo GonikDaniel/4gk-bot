@@ -7,12 +7,9 @@
 const mysql      = require('mysql');
 const fetch      = require('node-fetch');
 const fs         = require('fs');
-const connection = mysql.createConnection({
-  host     : '127.0.0.1',
-  user     : 'root',
-  password : 'root',
-  database : 'test_node'
-});
+
+const config     = require('./db.config.js');
+const connection = mysql.createConnection(config);
 
 connection.connect(e => {
   if (e) {

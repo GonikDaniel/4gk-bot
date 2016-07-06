@@ -38,3 +38,4 @@ jspm_packages
 
 # Test files, backups, etc
 test.json
+db.config.js
