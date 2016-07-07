@@ -8,9 +8,9 @@ const fetch      = require('node-fetch');
 const fs         = require('fs');
 
 // https://github.com/mysqljs/mysql
-const mysql      = require('mysql');
-const config     = require('./db.config.js');
-const connection = mysql.createConnection(config);
+// const mysql      = require('mysql');
+// const config     = require('./db.config.js');
+// const connection = mysql.createConnection(config);
 
 const mongoose   = require('mongoose');
 const Question   = require('./models/questions.js');
