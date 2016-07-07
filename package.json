@@ -11,6 +11,12 @@
   "license": "ISC",
   "dependencies": {
     "mysql": "2.11.1",
-    "node-fetch": "1.5.3"
+    "node-fetch": "1.5.3",
+    "express": "~3.4.7",
+    "body-parser": "~1.13.1",
+    "mongoose": "~4.0.6"
+  },
+  "engines": {
+    "node": ">=0.10.25"
   }
 }

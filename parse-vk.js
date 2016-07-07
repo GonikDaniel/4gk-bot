@@ -1,22 +1,22 @@
-// https://github.com/mysqljs/mysql
-
 /*=================================
 =            Bootstrap            =
 =================================*/
 
-const mysql      = require('mysql');
+'use strict';
+
 const fetch      = require('node-fetch');
 const fs         = require('fs');
 
+// https://github.com/mysqljs/mysql
+const mysql      = require('mysql');
 const config     = require('./db.config.js');
 const connection = mysql.createConnection(config);
 
-connection.connect(e => {
-  if (e) {
-    console.log('error in DB connection');
-    connection.end();
-  }
-});
+const mongoose   = require('mongoose');
+const Question   = require('./models/questions.js');
+
+const DB         = require('./db.connect.js');
+DB.connect();
 
 /*=====  End of Bootstrap  ======*/
 
@@ -40,7 +40,7 @@ const replacer = (key, value) => {
   const removeFields = /comments|reposts|attachments/i;
   if (removeFields.test(key)) {
     return undefined;
-  }
+  };
   return value;
 }
 
@@ -49,24 +49,67 @@ fetch(URL, options).then(res => {
   
   if(contentType && contentType.includes('application/json')) {
     return res.json().then(json => {
-      fs.writeFile("./test.json", JSON.stringify(json, replacer, 2), err =>
-        err ? console.log(err) : console.log("The file was saved!")
-      );
+      if (json && json.response) {
+        // in case of bad format
+        try {
+          const records = json.response.slice(1);
+          let questions = records.filter(record => record.text.toLowerCase().includes('#вопрос') && record);
+          questions = questions.map(question => {
+            const reg = new RegExp(/\] (.*?)\[/);
+
+            question.question = question.text.match(reg)[1];
+            question.answer = question.attachment.photo.text;
+            question.likes = question.likes.count;
+            delete question.attachment;
+            delete question.text;
+            return question;
+          });
+
+          // fs.writeFile("./questions.json", JSON.stringify(questions, replacer, 2), e =>
+          //   e ? console.log(e) : console.log("The file was saved!")
+          // );
+
+          const promises = [];
+          questions.map((q, index) => {
+            const question = new Question( q );
+            question.id = question._id;
+            // http://mongoosejs.com/docs/api.html#model_Model-save
+            const promise = question.save(e => {
+              e ? console.log(e) : console.log("The question was saved!");
+            });
+            promises.push(promise);
+          });
+          
+          Promise.all( promises ).then(() => mongoose.connection.close());
+        } catch(e) {
+          console.log(e);
+        }
+      }
     });
   } else {
     console.log('Oops, we haven\'t got JSON!');
   }
+
 });
+
 
 /*=====  End of VK requests  ======*/
 
 
 
 /*===============================
-=            Queries            =
+=            MySQL            =
 ===============================*/
 
-const question  = { question: 'Hello MySQL', answer: 'Test' };
+// connection.connect(e => {
+//   if (e) {
+//     console.log('error in DB connection');
+//     connection.end();
+//   }
+// });
+
+
+// const question  = { question: 'Hello MySQL', answer: 'Test' };
 
 // const query = connection.query(
 //   'INSERT INTO questions SET ?',
@@ -78,7 +121,7 @@ const question  = { question: 'Hello MySQL', answer: 'Test' };
 // );
 // console.log(query.sql); // INSERT INTO questions SET `id` = int (AUTO INCREMENT), `question` = 'Hello MySQL'
 
-/*=====  End of Queries  ======*/
 
+// connection.end();
 
-connection.end();
+/*=====  End of MySQL  ======*/
