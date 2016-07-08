@@ -17,8 +17,8 @@ const options = {
 };
 const bot = new TelegramBot(token, options);
 
-const imagesnapjs = require('imagesnapjs');
-const filename = '/tmp/webcam.jpg';
+// const imagesnapjs = require('imagesnapjs');
+// const filename = '/tmp/webcam.jpg';
 
 const commands = require('./commands.js');
 
@@ -77,14 +77,15 @@ module.exports = {
   },
 
   getWebCamPicture: (chatId) => {
-    fs.exists(filename, exists => {
-      if(exists) fs.unlinkSync(filename);
+    console.log('This feature won\'t work properly on any platform');
+    // fs.exists(filename, exists => {
+    //   if(exists) fs.unlinkSync(filename);
       
-      imagesnapjs.capture(filename, { cliflags: '-w 2' }, e => {
-        console.log(e ? e : 'Success!');
-        bot.sendPhoto(chatId, filename, { caption: "It's your photo!" });
-      });
-    })
+    //   imagesnapjs.capture(filename, { cliflags: '-w 2' }, e => {
+    //     console.log(e ? e : 'Success!');
+    //     bot.sendPhoto(chatId, filename, { caption: "It's your photo!" });
+    //   });
+    // })
   }
     
 };

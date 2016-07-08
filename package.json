@@ -14,7 +14,6 @@
     "express": "~3.4.7",
     "http": "0.0.0",
     "iconv": "2.2.1",
-    "imagesnapjs": "0.0.7",
     "mongoose": "~4.0.6",
     "mysql": "2.11.1",
     "node-fetch": "1.5.3",
