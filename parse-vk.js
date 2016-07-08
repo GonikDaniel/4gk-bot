@@ -7,11 +7,6 @@
 const fetch      = require('node-fetch');
 const fs         = require('fs');
 
-// https://github.com/mysqljs/mysql
-// const mysql      = require('mysql');
-// const config     = require('./db.config.js');
-// const connection = mysql.createConnection(config);
-
 const mongoose   = require('mongoose');
 const Question   = require('./models/questions.js');
 
@@ -60,6 +55,7 @@ fetch(URL, options).then(res => {
             question.question = question.text.match(reg)[1];
             question.answer = question.attachment.photo.text;
             question.likes = question.likes.count;
+            question.date = question.date * 1000;
             delete question.attachment;
             delete question.text;
             return question;
@@ -100,6 +96,11 @@ fetch(URL, options).then(res => {
 /*===============================
 =            MySQL            =
 ===============================*/
+
+// https://github.com/mysqljs/mysql
+// const mysql      = require('mysql');
+// const config     = require('./db.config.js');
+// const connection = mysql.createConnection(config);
 
 // connection.connect(e => {
 //   if (e) {

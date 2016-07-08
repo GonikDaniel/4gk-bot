@@ -10,11 +10,16 @@
   "author": "Daniel Gonik <gonik.daniel88@gmail.com> (http://igonik.ru/)",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "~1.13.1",
+    "express": "~3.4.7",
+    "http": "0.0.0",
+    "iconv": "2.2.1",
+    "imagesnapjs": "0.0.7",
+    "mongoose": "~4.0.6",
     "mysql": "2.11.1",
     "node-fetch": "1.5.3",
-    "express": "~3.4.7",
-    "body-parser": "~1.13.1",
-    "mongoose": "~4.0.6"
+    "node-telegram-bot-api": "0.23.3",
+    "request": "2.72.0"
   },
   "engines": {
     "node": ">=0.10.25"
