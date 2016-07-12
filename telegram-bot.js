@@ -33,6 +33,12 @@ bot.on('text', function(msg) {
     case '/hello':
       BotService.sendMessageByBot(chatId, `Hello, ${msg.from.first_name}!`);
       break;
+    case '/q':
+      BotService.getQuestion(chatId);
+      break;
+    case '/a':
+      BotService.getLastQuestionAnswer(chatId);
+      break;
     case '/bash':
       BotService.getBashQuote(chatId);
       break;

@@ -21,11 +21,35 @@ const bot = new TelegramBot(token, options);
 // const filename = '/tmp/webcam.jpg';
 
 const commands = require('./commands.js');
+const constants = require('../constants.js');
+
+let lastQuestionAnswer = '';
 
 module.exports = {
   showHelp: (chatId) => bot.sendMessage(chatId, commands),
 
-  sendMessageByBot: (chatId, msg) => bot.sendMessage(chatId, msg, { caption: 'I\'m a cute bot!' }),
+  sendMessageByBot: function(chatId, msg) { bot.sendMessage(chatId, msg, { caption: 'I\'m a cute bot!' }) },
+
+  getQuestion: (chatId) => {
+    request({ 
+      method: 'GET',
+      uri: `${constants.API_URL}/questions/random`,
+    }, (error, response, body) => {
+      if (!error) {
+        const q = JSON.parse(body);
+        let question = _parseTags(q.question);
+        lastQuestionAnswer = _parseTags(q.answer);
+        question += `\nОтвет на последний вопрос вы можете получить дав боту команду '/a'`;
+        // question += `\nОтвет:\nhttps://datalead-4gk.herokuapp.com/answer/${q.id}`;
+        console.log(question);
+        bot.sendMessage(chatId, question, { caption: 'Here is random question' });
+      }
+    });
+  },
+
+  getLastQuestionAnswer: (chatId) => {
+    bot.sendMessage(chatId, lastQuestionAnswer, { caption: 'Here is last question answer' });
+  },
 
   getBashQuote: (chatId) => {
     const options = {
@@ -41,25 +65,6 @@ module.exports = {
         bot.sendMessage(chatId, content, { caption: 'I\'m a cute bot!' })
       }));
     });
-
-    function removeAllMarkUp(str) {
-      let cleanQuote = replaceAll(str, "<' + 'br>", '\n');
-      cleanQuote = replaceAll(cleanQuote, "<' + 'br />", '\n');
-      cleanQuote = replaceAll(cleanQuote, "&quot;", '\"');
-      cleanQuote = replaceAll(cleanQuote, "&lt;", '>');
-      cleanQuote = replaceAll(cleanQuote, "&gt;", '<');
-      return cleanQuote;
-    }
-
-    function replaceAll (str, separatorStr, replaceStr) {
-      return str.split(separatorStr).join(replaceStr);
-    }
-
-    function getQuoteFromContent(str) {
-      let quoteBlock = str.replace('<\' + \'div id="b_q_t" style="padding: 1em 0;">', '__the_separator__');
-      quoteBlock = quoteBlock.replace('<\' + \'/div><\' + \'small>', '__the_separator__');
-      return quoteBlock.split('__the_separator__');
-    }
   },
 
   getCatImage: (chatId) => {
@@ -89,3 +94,28 @@ module.exports = {
   }
     
 };
+
+
+function _parseTags(str) {
+  return str.replace(/<br>/g, '\n');
+}
+
+// helpers methods for bash quote
+function removeAllMarkUp(str) {
+  let cleanQuote = replaceAll(str, "<' + 'br>", '\n');
+  cleanQuote = replaceAll(cleanQuote, "<' + 'br />", '\n');
+  cleanQuote = replaceAll(cleanQuote, "&quot;", '\"');
+  cleanQuote = replaceAll(cleanQuote, "&lt;", '>');
+  cleanQuote = replaceAll(cleanQuote, "&gt;", '<');
+  return cleanQuote;
+}
+
+function replaceAll(str, separatorStr, replaceStr) {
+  return str.split(separatorStr).join(replaceStr);
+}
+
+function getQuoteFromContent(str) {
+  let quoteBlock = str.replace('<\' + \'div id="b_q_t" style="padding: 1em 0;">', '__the_separator__');
+  quoteBlock = quoteBlock.replace('<\' + \'/div><\' + \'small>', '__the_separator__');
+  return quoteBlock.split('__the_separator__');
+}

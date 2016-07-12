@@ -38,6 +38,18 @@ express()
     });
   })
 
+  .get('/api/questions/random', function (req, res) {
+    Question.count().exec((err, count) => {
+
+      const random = Math.floor(Math.random() * count);
+
+      Question.findOne().skip(random).exec((err, question) => {
+        res.json(200, question);
+      });
+
+    });
+  })
+
   .get('/api/questions/:id', function (req, res) {
     // http://mongoosejs.com/docs/api.html#model_Model.findById
     Question.findById( req.params.id, function ( err, question ) {
